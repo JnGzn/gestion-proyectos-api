@@ -1,3 +1,5 @@
+import { DescriptionError, StatusCode } from "../../model/error.enum";
+import { ExeptionCustomError } from "../../model/error.model";
 import { iUser } from "../../model/user.model";
 import DatabaseConnection from "./DatabaseConnection";
 
@@ -14,10 +16,13 @@ export class PersistenceService extends DatabaseConnection {
             
             // usuario no encontrado
             if(!result || result.length == 0) {
-                throw "usuario no encontrado"
+                throw new ExeptionCustomError(
+                    StatusCode.LOGGIN_ERROR_CODE, 
+                    DescriptionError.LOGGIN_ERROR_CODE, 
+                    "Invalid access"
+                )
             }
 
-            console.log("🚀 ~ PersistenceService ~ validateCredential ~ result:", result)
             const userResponse: iUser = {
                 name: result[0].name,
                 email: result[0].email,
