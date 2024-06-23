@@ -1,12 +1,13 @@
 
+import { PoolConnection } from 'mysql2';
 import configVariables from '../../config/config.variables';
-import mysql, { Pool } from 'mysql2/promise';
+import mysql, { Connection, Pool } from 'mysql2/promise';
 
 class DatabaseConnection {
   //private static instance: DatabaseConnection;
   private pool: Pool;
 
-  public get connection(): Pool {
+  public get connection() {
     return this.pool;
   }
   constructor() {
@@ -19,8 +20,9 @@ class DatabaseConnection {
     });
   }
 
+  
   getInstance(): Pool {
-    return this.pool;
+    return this.pool
   }
 
   public async query<T>(sql: string, params: any[] = []): Promise<T> {

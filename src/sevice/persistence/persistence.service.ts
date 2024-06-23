@@ -1,39 +1,39 @@
-import { DescriptionError, StatusCode } from "../../model/error.enum";
-import { ExeptionCustomError } from "../../model/error.model";
-import { iUser } from "../../model/user.model";
-import DatabaseConnection from "./DatabaseConnection";
 
-export class PersistenceService extends DatabaseConnection { 
+import DatabaseConnection from "./databaseConnection";
+
+export class PersistenceService extends DatabaseConnection {
 
     /**
-     * Inserta el registro a la base de datos
+     * valida usuario desde la base de datos
      */
-    async validateCredential(user: string, pwd: string): Promise<iUser> {
-
+    async executeQueryStoreProcedure(query: string, args: any[]) {
         try {
-           
-            const[ [result]]: any[] = await this.getInstance().query('call validate_user(?, ?);',[user, pwd])
-            
-            // usuario no encontrado
-            if(!result || result.length == 0) {
-                throw new ExeptionCustomError(
-                    StatusCode.LOGGIN_ERROR_CODE, 
-                    DescriptionError.LOGGIN_ERROR_CODE, 
-                    "Invalid access"
-                )
-            }
 
-            const userResponse: iUser = {
-                name: result[0].name,
-                email: result[0].email,
-                role: result[0].role
-            }
-            console.log("🚀 ~ PersistenceService ~ validateCredential ~ userResponse:", JSON.stringify(userResponse))
-            return userResponse
+
+            // execute query
+            const [[result, options]]: any[] = await this.getInstance().query(query, args)
+
+            return { result, options }
+
         } catch (error) {
-            console.debug(error);
+            console.log("🚀 ~ PersistenceService ~ executeStoreProcedure ~ error:", error)
             throw error
-        }
+        } 
+
+    }
+
+    async executeInsertStoreProcedure(query: string, args: any[]) {
+        try {
+            // execute query
+            const [result]: any[] = await this.getInstance().query(query, args)
+            console.log("🚀 ~ PersistenceService ~ executeInsertStoreProcedure ~ result:", result)
+            return result
+
+        } catch (error) {
+            console.log("🚀 ~ PersistenceService ~ executeStoreProcedure ~ error:", error)
+            throw error
+        } 
+
     }
 
 

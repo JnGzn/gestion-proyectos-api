@@ -4,6 +4,10 @@ import { controllers } from './controller/index.controller';
 import { MetadataKeys } from './utils/decorators/metadata.keys';
 import { IRouter } from './utils/decorators/handlers.decorator';
 
+
+export const exRouter = express.Router();
+
+//npx ts-node-dev src/server.ts
 class Application {
   private readonly _instance: ExApplication;
   get instance(): ExApplication {
@@ -19,6 +23,7 @@ class Application {
       res.json({ message: 'Hello World!' });
     });
     // TODO: register routers
+
     const info: Array<{ api: string, handler: string }> = [];
 
     controllers.forEach((controllerClass) => {
@@ -26,20 +31,17 @@ class Application {
 
       const basePath: string = Reflect.getMetadata(MetadataKeys.BASE_PATH, controllerClass);
       const routers: IRouter[] = Reflect.getMetadata(MetadataKeys.ROUTERS, controllerClass);
-
       const exRouter = express.Router();
 
-      routers.forEach(({ method, path, handlerName }) => {
-        exRouter[method](path, controllerInstance[String(handlerName)].bind(controllerInstance));
+      routers.forEach(({ method, path, middleware, handlerName }) => {
 
-        info.push(
+        exRouter[method](path, middleware, controllerInstance[String(handlerName)])//.bind(controllerInstance));
 
-          {
-            api: `${method.toLocaleUpperCase()} ${basePath + path}`,
-            handler: `${controllerClass.name}.${String(handlerName)}`,
-          }
 
-        );
+        info.push({
+          api: `${method?.toLocaleUpperCase()} ${basePath + path}`,
+          handler: `${controllerClass.name}.${String(handlerName)}`,
+        });
       });
 
       this._instance.use(basePath, exRouter);
