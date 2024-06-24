@@ -8,14 +8,13 @@ export class UserValidator {
     static validateRequest(data: any): any {
 
         const schemaUserPost = joi.object().keys({
-            usuario: joi.string().email().required(),
+            usuario: joi.string().required(),
             pwd: joi.string().required()
         })
 
         const validation = schemaUserPost.validate(data)
 
         if (validation.error) {
-            console.log("🚀 ~ UserValidator ~ validateRequest ~ error:", validation.error)
             throw new ExeptionCustomError(
                 StatusCode.VALIDATOR_ERROR_CODE, 
                 DescriptionError.VALIDATOR_ERROR, 

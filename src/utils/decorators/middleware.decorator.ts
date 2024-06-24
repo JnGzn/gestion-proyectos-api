@@ -1,4 +1,4 @@
-import { ControllerDecoratorParams } from "../../enums";
+import { ControllerDecoratorParams } from "../../model/decorator";
 import { RequestHandler } from "express";
 import 'reflect-metadata';
 import { IRouter } from "./handlers.decorator";

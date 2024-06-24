@@ -8,11 +8,12 @@ import { iProject } from '../../model/project.model';
 import { StatusCode } from '../../model/error/error.enum';
 import { StatusTask } from '../../model/status.enum';
 import { iTask } from '../../model/task.model';
+import { isOperator, validateToken } from '../../middleware/isAdmin.middleware';
 
 @Controller('/v1/gestion/task')
 export default class TaskController {
 
-  @Post('/')
+  @Post('/', [validateToken])
   public async createTask(req: Request, res: Response) {
     try {
 
@@ -23,7 +24,6 @@ export default class TaskController {
         nombre: body.nombre,
         descripcion: body.descripcion,
         estado: StatusTask.INITIAL_STATUS,
-        idUsuarioAsignado: body.idUsuarioAsignado,
         idProyecto: body.idProyecto
       }
 
@@ -59,7 +59,7 @@ export default class TaskController {
     }
   }
 
-  @Put('/')
+  @Put('/', [validateToken])
   public async updateProject(req: Request, res: Response) {
     try {
 
@@ -106,7 +106,7 @@ export default class TaskController {
     }
   }
 
-  @Delete('/')
+  @Delete('/', [validateToken])
   public async deleteProject(req: Request, res: Response) {
     try {
 
@@ -118,6 +118,50 @@ export default class TaskController {
       }
 
       const response = await taskService.deleteTask(task)
+
+      res.status(200).json({
+        data: response,
+        err: null
+      }).end()
+
+      return
+    } catch (error: any) {
+      // error controlado
+      if (error instanceof ExeptionCustomError) {
+        res.status(error.statusCode).json({
+          data: null,
+          error: {
+            message: error.messageError,
+            error: error.error
+          }
+        })
+        return
+      }
+
+      // error no controlado
+      res.status(StatusCode.INTERNAL_ERROR_CODE).json({
+        data: null,
+        error: {
+          message: error.messageError,
+          error: error.error
+        }
+      })
+    }
+  }
+
+  @Put('/complete', [isOperator])
+  public async updateProjectComplete(req: Request, res: Response) {
+    try {
+
+      const body = req.body
+      TaskValidator.validateRequestUpdateStatus(req.body)
+
+      const task: iTask = {
+        id: body.idTarea,
+        estado: body.estado
+      }
+
+      const response = await taskService.updateTask(task)
 
       res.status(200).json({
         data: response,

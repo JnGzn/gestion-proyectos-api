@@ -20,47 +20,33 @@ class AuthService {
         return sign(payload, this.sign, { expiresIn: '10m' });
     }
 
-    verifyToken(token: string): JwtPayload | string {
+
+    validateToken(token: string): string {
         try {
-
-            return verify(token, this.sign)
+            const jwtData: any = verify(token, this.sign)
+            return jwtData.user.role
         } catch (error) {
-            console.log("🚀 ~ AuthService ~ verifyToken ~ error:", error)
-
+            throw new ExeptionCustomError(
+                StatusCode.TOKEN_INVALID_ERROR_CODE,
+                DescriptionError.TOKEN_INVALID_ERROR,
+                "Invalid access"
+            )
         }
-        return "no valida"
+
     }
 
     async login(username: string, password: string): Promise<any> {
-        try {
-            const { result } = await this.persistenceService.executeQueryStoreProcedure('call validate_user(?, ?);', [username, password])
-
-            if (!result) {
-                return;
-            }
-
-            // usuario no encontrado
-            if (!result || result.length == 0) {
-                throw new ExeptionCustomError(
-                    StatusCode.LOGGIN_ERROR_CODE,
-                    DescriptionError.LOGGIN_ERROR,
-                    "Invalid access"
-                )
-            }
-
-            const userResponse: iUser = {
-                name: result[0].name,
-                email: result[0].email,
-                role: result[0].role
-            }
+        const result = await this.persistenceService.authUser(username, password)
 
 
-            const token = this.generateToken({ user: result });
-
-            return { token };
-        } catch (error) {
-
+        const userResponse: iUser = {
+            id: result.id,
+            role: result.role,
         }
+
+        const token = this.generateToken({ user: userResponse });
+
+        return { token };
 
     }
 }

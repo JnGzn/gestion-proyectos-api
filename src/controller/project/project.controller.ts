@@ -7,12 +7,12 @@ import { ProjectValidator } from '../../validators/project.validator';
 import { iProject } from '../../model/project.model';
 import { StatusCode } from '../../model/error/error.enum';
 import { StatusProject } from '../../model/status.enum';
-import { validateToken } from '../../middleware/isAdmin.middleware';
+import { isOperator, validateToken } from '../../middleware/isAdmin.middleware';
 
 @Controller('/v1/gestion/project')
 export default class ProjectController {
 
-  @Post('/')
+  @Post('/', [validateToken])
   public async createProject(req: Request, res: Response) {
     try {
 
@@ -57,7 +57,51 @@ export default class ProjectController {
     }
   }
 
-  @Delete('/')
+  @Put('/complete', [isOperator])
+  public async updateProjectComplete(req: Request, res: Response) {
+    try {
+
+      const body = req.body
+      ProjectValidator.validateRequestUpdateStatus(req.body)
+
+      const project: iProject = {
+        id: body.idProyecto,
+        estado: body.estado
+      }
+
+      const response = await projectService.updateProjectComplete(project)
+
+      res.status(200).json({
+        data: response,
+        err: null
+      }).end()
+
+      return
+    } catch (error: any) {
+      // error controlado
+      if (error instanceof ExeptionCustomError) {
+        res.status(error.statusCode).json({
+          data: null,
+          error: {
+            message: error.messageError,
+            error: error.error
+          }
+        })
+        return
+      }
+
+      // error no controlado
+      res.status(StatusCode.INTERNAL_ERROR_CODE).json({
+        data: null,
+        error: {
+          message: error.messageError,
+          error: error.error
+        }
+      })
+    }
+  }
+
+  @Delete('/', [validateToken])
   public async deleteProject(req: Request, res: Response) {
     try {
 
@@ -100,7 +144,7 @@ export default class ProjectController {
     }
   }
 
-  @Put('/')
+  @Put('/', [validateToken])
   public async updateProject(req: Request, res: Response) {
     try {
 
@@ -144,11 +188,6 @@ export default class ProjectController {
         }
       })
     }
-  }
-  public static abc(req: Request, res: Response, next: NextFunction): void {
-    next();
-
-    return;
   }
 
   @Get('/', [validateToken])

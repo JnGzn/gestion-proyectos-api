@@ -14,51 +14,26 @@ class TaskService {
     }
 
     async createTask(task: iTask): Promise<any> {
-        const result: any = await this.persistenceService.executeInsertStoreProcedure('CALL create_task(?,?,?, ?, ?)', [task.nombre, task.descripcion, task.estado, task.idProyecto, task.idUsuarioAsignado])
-
-        if(!result.affectedRows) {
-            throw new ExeptionCustomError(
-                StatusCode.NO_CREATE_ERROR_CODE,
-                DescriptionError.NO_CREATE_ERROR,
-                null
-            )
-        }
-
-        return task
+        const result: any = await this.persistenceService.createTask(task)
+        return result
     }
 
     async updateTask(task: iTask): Promise<any> {
-        console.log("🚀 ~ ProjectService ~ createProject ~ TASK:", task)
-        const result: any = await this.persistenceService.executeInsertStoreProcedure(
-            'CALL update_task(?, ?, ?, ?, ?)', 
-            [task.id, task.nombre, task.descripcion, task.estado, task.idUsuarioAsignado])
-            
-        console.log("🚀 ~ ProjectService ~ createProject ~ result:", result.affectedRows)
+        const [result]: any = await this.persistenceService.updateTask(task)
 
-        if(!result.affectedRows) {
+        if (!result) {
             throw new ExeptionCustomError(
-                StatusCode.NO_DELETE_ERROR_CODE,
-                DescriptionError.NO_DELETE_ERROR,
+                StatusCode.NO_UPDATE_TASK_CODE,
+                DescriptionError.NO_UPDATE_TASK,
                 null
             )
         }
-
         return task
     }
 
     async deleteTask(task: iTask): Promise<any> {
-        console.log("🚀 ~ ProjectService ~ createProject ~ TASK:", task)
-        const result: any = await this.persistenceService.executeInsertStoreProcedure('CALL delete_task(?)', [task.id])
-        console.log("🚀 ~ ProjectService ~ createProject ~ result:", result.affectedRows)
-
-        if(!result.affectedRows) {
-            throw new ExeptionCustomError(
-                StatusCode.NO_DELETE_ERROR_CODE,
-                DescriptionError.NO_DELETE_ERROR,
-                null
-            )
-        }
-
+        await this.persistenceService.deleteTask(task)
+       
         return task
     }
 

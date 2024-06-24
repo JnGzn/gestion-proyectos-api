@@ -9,9 +9,8 @@ export class TaskValidator {
     static validateRequestCreate(data: any): any {
 
         const schemaTaskCreate = joi.object().keys({
-            nombre: joi.string().required(),
-            descripcion: joi.string().required(),
-            idUsuarioAsignado: joi.number().required(),
+            nombre: joi.string().optional(),
+            descripcion: joi.string().optional(),
             idProyecto: joi.number().required()
         })
 
@@ -19,8 +18,8 @@ export class TaskValidator {
 
         if (validation.error) {
             throw new ExeptionCustomError(
-                StatusCode.VALIDATOR_ERROR_CODE, 
-                DescriptionError.VALIDATOR_ERROR, 
+                StatusCode.VALIDATOR_ERROR_CODE,
+                DescriptionError.VALIDATOR_ERROR,
                 validation.error.details
             )
         }
@@ -38,8 +37,8 @@ export class TaskValidator {
 
         if (validation.error) {
             throw new ExeptionCustomError(
-                StatusCode.VALIDATOR_ERROR_CODE, 
-                DescriptionError.VALIDATOR_ERROR, 
+                StatusCode.VALIDATOR_ERROR_CODE,
+                DescriptionError.VALIDATOR_ERROR,
                 validation.error.details
             )
         }
@@ -49,22 +48,39 @@ export class TaskValidator {
 
     static validateRequestUpdate(data: any): any {
 
-        const allowedStatus = Object.values(StatusTask)
-
         const schemaTaskUpdate = joi.object().keys({
             idTarea: joi.number().required(),
-            nombre: joi.string().required(),
-            descripcion: joi.string().required(),
-            estado: joi.string().valid(...allowedStatus),
-            idUsuarioAsignado: joi.number().required()
+            nombre: joi.string().optional(),
+            descripcion: joi.string().optional(),
+            idUsuarioAsignado: joi.number().optional()
         })
 
         const validation = schemaTaskUpdate.validate(data)
 
         if (validation.error) {
             throw new ExeptionCustomError(
-                StatusCode.VALIDATOR_ERROR_CODE, 
-                DescriptionError.VALIDATOR_ERROR, 
+                StatusCode.VALIDATOR_ERROR_CODE,
+                DescriptionError.VALIDATOR_ERROR,
+                validation.error.details
+            )
+        }
+
+        return validation.value;
+    }
+
+    static validateRequestUpdateStatus(data: any): any {
+
+        const schemaProjStatusTaskUpdate = joi.object().keys({
+            idTarea: joi.number().required(),
+            estado: joi.string().valid(StatusTask.COMPLETE_STATUS)
+        })
+
+        const validation = schemaProjStatusTaskUpdate.validate(data)
+
+        if (validation.error) {
+            throw new ExeptionCustomError(
+                StatusCode.VALIDATOR_ERROR_CODE,
+                DescriptionError.VALIDATOR_ERROR,
                 validation.error.details
             )
         }

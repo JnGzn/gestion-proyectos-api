@@ -17,8 +17,8 @@ export class ProjectValidator {
 
         if (validation.error) {
             throw new ExeptionCustomError(
-                StatusCode.VALIDATOR_ERROR_CODE, 
-                DescriptionError.VALIDATOR_ERROR, 
+                StatusCode.VALIDATOR_ERROR_CODE,
+                DescriptionError.VALIDATOR_ERROR,
                 validation.error.details
             )
         }
@@ -36,8 +36,8 @@ export class ProjectValidator {
 
         if (validation.error) {
             throw new ExeptionCustomError(
-                StatusCode.VALIDATOR_ERROR_CODE, 
-                DescriptionError.VALIDATOR_ERROR, 
+                StatusCode.VALIDATOR_ERROR_CODE,
+                DescriptionError.VALIDATOR_ERROR,
                 validation.error.details
             )
         }
@@ -47,21 +47,38 @@ export class ProjectValidator {
 
     static validateRequestUpdate(data: any): any {
 
-        const allowedStatus = Object.values(StatusProject)
-
         const schemaProjStatusProjectUpdate = joi.object().keys({
             idProyecto: joi.number().required(),
-            nombre: joi.string().required(),
-            descripcion: joi.string().required(),
-            estado: joi.string().valid(...allowedStatus)
+            nombre: joi.string().optional(),
+            descripcion: joi.string().optional()
         })
 
         const validation = schemaProjStatusProjectUpdate.validate(data)
 
         if (validation.error) {
             throw new ExeptionCustomError(
-                StatusCode.VALIDATOR_ERROR_CODE, 
-                DescriptionError.VALIDATOR_ERROR, 
+                StatusCode.VALIDATOR_ERROR_CODE,
+                DescriptionError.VALIDATOR_ERROR,
+                validation.error.details
+            )
+        }
+
+        return validation.value;
+    }
+
+    static validateRequestUpdateStatus(data: any): any {
+
+        const schemaProjStatusProjectUpdate = joi.object().keys({
+            idProyecto: joi.number().required(),
+            estado: joi.string().valid(StatusProject.COMPLETE_STATUS)
+        })
+
+        const validation = schemaProjStatusProjectUpdate.validate(data)
+
+        if (validation.error) {
+            throw new ExeptionCustomError(
+                StatusCode.VALIDATOR_ERROR_CODE,
+                DescriptionError.VALIDATOR_ERROR,
                 validation.error.details
             )
         }
