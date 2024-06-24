@@ -204,6 +204,7 @@ export default class ProjectController {
 
       return
     } catch (error: any) {
+      console.log("🚀 ~ ProjectController ~ getProjects ~ error:", error)
       // error controlado
       if (error instanceof ExeptionCustomError) {
         res.status(error.statusCode).json({

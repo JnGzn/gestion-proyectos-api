@@ -33,33 +33,42 @@ class ProjectService {
 
     async getProjects(): Promise<any> {
         const result = await this.persistenceService.getAllProjects()
+        console.log("🚀 ~ ProjectService ~ getProjects ~ result:", result)
+    
 
 
         const projectResponse: any = {
-
+            
         }
         result.forEach((el: any) => {
-            if (!projectResponse[el.idproject]) {
-                projectResponse[el.idproject] = {}
-
+           console.log("🚀 ~ ProjectService ~ result.forEach ~ el:", el.tasks)
+           if (!projectResponse[el.idproject]) {
+               projectResponse[el.idproject] = {}
+                //console.log("🚀 ~ ProjectService ~ result.forEach ~ el:", el.idproject)
                 projectResponse[el.idproject].idproject = el.idproject
                 projectResponse[el.idproject].nameProject = el.nameProject
                 projectResponse[el.idproject].descriptionProject = el.descriptionProject
                 projectResponse[el.idproject].status = el.status
                 projectResponse[el.idproject].tareas = []
-
+                
             }
-            if (el.idtask) {
+            if (el.tasks) {
 
-                projectResponse[el.idproject].tareas.push({
-                    id: el.idtask,
-                    nombre: el.nameTask,
-                    descripcion: el.descriptionTask,
-                    estado: el.statusT,
-                })
+                el.tasks.forEach((itaskF: any) => {
+                    
+                    console.log("🚀 ~ ProjectService ~ result.forEach ~ idtask:", el.iTask)
+                    
+                    projectResponse[el.idproject].tareas.push({
+                        id: itaskF.idtask,
+                        nombre: itaskF.nameTask,
+                        descripcion: itaskF.descriptionTask,
+                        estado: itaskF.statusT,
+                    })
+                });
             }
         });
-
+        
+        console.log("🚀 ~ ProjectService ~ getProjects ~ projectResponse:", projectResponse)
         return { projects: Object.values(projectResponse) };
 
     }
