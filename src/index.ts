@@ -3,6 +3,10 @@ import express, { Application as ExApplication, Handler } from 'express';
 import { controllers } from './controller/index.controller';
 import { MetadataKeys } from './utils/decorators/metadata.keys';
 import { IRouter } from './utils/decorators/handlers.decorator';
+import swaggerUi from 'swagger-ui-express';
+import yaml from 'yamljs';
+
+const swaggerDocument = yaml.load('./swagger.yaml');
 
 
 export const exRouter = express.Router();
@@ -16,6 +20,7 @@ class Application {
   constructor() {
     this._instance = express();
     this._instance.use(express.json());
+    this._instance.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
     this.registerRouters();
   }
   private registerRouters() {

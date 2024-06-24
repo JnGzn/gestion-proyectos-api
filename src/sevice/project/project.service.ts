@@ -1,10 +1,8 @@
-import { StatsFs } from 'fs';
 import { DescriptionError, StatusCode } from '../../model/error/error.enum';
 import { ExeptionCustomError } from '../../model/error/error.model';
 import { iProject } from '../../model/project.model';
 import { PersistenceService } from '../persistence/persistence.service';
-import { StatusProject, StatusTask } from '../../model/status.enum';
-import { any } from 'joi';
+
 
 class ProjectService {
 
@@ -17,7 +15,14 @@ class ProjectService {
 
     async createProject(project: iProject): Promise<any> {
         const result: any = await this.persistenceService.createProject(project)
-        return result
+
+        const resultData: iProject = {
+            id: result.idproject,
+            nombre: result.nameProject,
+            descripcion: result.descriptionProject,
+            estado: result.status,
+        }
+        return { project: resultData }
     }
 
     async deleteProject(project: iProject): Promise<any> {
@@ -27,7 +32,7 @@ class ProjectService {
     }
 
     async getProjects(): Promise<any> {
-        const result  = await this.persistenceService.getAllProjects()
+        const result = await this.persistenceService.getAllProjects()
 
 
         const projectResponse: any = {
@@ -55,11 +60,7 @@ class ProjectService {
             }
         });
 
-
-
-
         return { projects: Object.values(projectResponse) };
-
 
     }
 

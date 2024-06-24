@@ -1,6 +1,5 @@
 import { DescriptionError, StatusCode } from '../../model/error/error.enum';
 import { ExeptionCustomError } from '../../model/error/error.model';
-import { iProject } from '../../model/project.model';
 import { iTask } from '../../model/task.model';
 import { PersistenceService } from '../persistence/persistence.service';
 
@@ -8,14 +7,21 @@ class TaskService {
 
     private persistenceService: PersistenceService;
 
-    // Constructor Clase ServiceTodo
     constructor() {
         this.persistenceService = new PersistenceService()
     }
 
     async createTask(task: iTask): Promise<any> {
         const result: any = await this.persistenceService.createTask(task)
-        return result
+
+        const resultData: iTask = {
+            id: result.idtask,
+            nombre: result.nameTask,
+            descripcion: result.descriptionTask,
+            estado: result.statusT,
+            idProyecto: result.project_idproject
+        }
+        return { task: resultData }
     }
 
     async updateTask(task: iTask): Promise<any> {
@@ -33,7 +39,7 @@ class TaskService {
 
     async deleteTask(task: iTask): Promise<any> {
         await this.persistenceService.deleteTask(task)
-       
+
         return task
     }
 

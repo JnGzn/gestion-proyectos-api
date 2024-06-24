@@ -1,0 +1,501 @@
+openapi: 3.0.3
+info:
+  title: Project API
+  description: API para gestionar proyectos y tareas
+  version: "1.0.0"
+servers:
+  - url: http://localhost:3001/v1/gestion
+paths:
+  /auth/login:
+    post:
+      tags:
+        - Login
+      summary: Login
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - email
+                - password
+              properties:
+                email:
+                  type: string
+                  example: email@example.com
+                password:
+                  type: string
+                  example: password
+                
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  token:
+                    type: string
+                  user:
+                    type: object
+                    properties:
+                      id:
+                        type: integer
+                      role:
+                        type: string
+        "401":
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: Unauthorized
+
+  /task:
+    post:
+      tags:
+        - Task
+      summary: Create Task
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - nombre
+                - descripcion
+              properties:
+                nombre:
+                  type: string
+                  example: PruebaTarea2
+                descripcion:
+                  type: string
+                  example: Desc tarea2
+
+      responses:
+        "201":
+          description: Task created
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      id:
+                        type: integer
+                      nombre:
+                        type: string
+                      descripcion:
+                        type: string
+                      idProyecto:
+                        type: integer
+                  err:
+                    type: string
+                    nullable: true
+        "400":
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: Bad request
+
+    put:
+      tags:
+        - Task
+      summary: Update Task
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - idTarea
+              properties:
+                idTarea:
+                  type: integer
+                  example: 20
+                nombre:
+                  type: string
+                  nullable: true
+                  example: updatenamek
+                descripcion:
+                  type: string
+                  nullable: true
+                  example: update
+
+      responses:
+        "200":
+          description: Task updated
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      id:
+                        type: integer
+                      nombre:
+                        type: string
+                      descripcion:
+                        type: string
+                      estado:
+                        type: string
+                  err:
+                    type: string
+                    nullable: true
+        "404":
+          description: Task not found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: Task not found
+
+    delete:
+      tags:
+        - Task
+      summary: Delete Task
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - idTarea
+              properties:
+                idTarea:
+                  type: integer
+                  example: 20
+      responses:
+        "200":
+          description: Task deleted
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      id:
+                        type: integer
+                  err:
+                    type: string
+                    nullable: true
+        "404":
+          description: Task not found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: Task not found
+
+  /task/complete:
+    put:
+      tags:
+        - Task
+      summary: Update Task Status
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - idTarea
+                - estado
+              properties:
+                idTarea:
+                  type: integer
+                  example: 13
+                estado:
+                  type: string
+                  example: Finalizado
+      responses:
+        "200":
+          description: Task status updated
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      id:
+                        type: integer
+                      estado:
+                        type: string
+                  err:
+                    type: string
+                    nullable: true
+        "401":
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: Unauthorized
+
+  /v1/gestion/project:
+    
+    post:
+      tags:
+        - Project
+      summary: Create Project
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - nombre
+                - descripcion
+              properties:
+                nombre:
+                  type: string
+                  example: PruebaTarea2
+                descripcion:
+                  type: string
+                  example: Desc tarea2
+
+      responses:
+        "201":
+          description: Task created
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      id:
+                        type: integer
+                      nombre:
+                        type: string
+                      descripcion:
+                        type: string
+                      
+                  err:
+                    type: string
+                    nullable: true
+        "400":
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: Bad request
+
+    get:
+      tags:
+        - Project
+      summary: Retrieve all projects
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      projects:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            idproject:
+                              type: integer
+                            nameProject:
+                              type: string
+                            descriptionProject:
+                              type: string
+                            status:
+                              type: string
+                            tareas:
+                              type: array
+                              items: {}
+        'default':
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    
+    
+
+    put:
+      tags:
+        - Project
+      summary: Update a project description
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - idProyecto
+              properties:
+                idProyecto:
+                  type: integer
+                descripcion:
+                  type: string
+                nombre:
+                  type: string
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      id:
+                        type: integer
+                      descripcion:
+                        type: string
+        '404':
+          description: Project not found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: Project not found
+
+    delete:
+      tags:
+        - Project
+      summary: Delete a project
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - idProyecto
+              properties:
+                idProyecto:
+                  type: integer
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      id:
+                        type: integer
+        '404':
+          description: Project not found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: Project not found
+
+  /v1/gestion/project/complete:
+    put:
+      tags:
+        - Project
+      summary: Update project status to "Finalizado"
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - idProyecto
+                - estado
+              properties:
+                idProyecto:
+                  type: integer
+                estado:
+                  type: string
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      id:
+                        type: integer
+                      estado:
+                        type: string
+        '404':
+          description: Project not found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: Project not found
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
