@@ -1,7 +1,7 @@
 import { NextFunction, Request, Response } from 'express';
 import projectService from '../../sevice/project/project.service';
 import Controller from '../../utils/decorators/controller.decorator';
-import  { Delete, Get, Post, Put } from '../../utils/decorators/handlers.decorator';
+import { Delete, Get, Post, Put } from '../../utils/decorators/handlers.decorator';
 import { ExeptionCustomError } from '../../model/error/error.model';
 import { ProjectValidator } from '../../validators/project.validator';
 import { iProject } from '../../model/project.model';
@@ -194,9 +194,6 @@ export default class ProjectController {
   //@Middleware([isAdmin])
   public async getProjects(req: Request, res: Response) {
     try {
-
-      console.log("GETT")
-   
 
       const response = await projectService.getProjects()
 

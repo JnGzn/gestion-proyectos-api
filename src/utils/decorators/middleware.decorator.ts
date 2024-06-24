@@ -16,14 +16,3 @@ const Middlewarex = (middlewares: RequestHandler[]) => {
   }
   export default Middlewarex;
 
-// export function Middleware(middlewares: RequestHandler[]): Function {
-//     return (target: any, propertyKey: string): void  =>{
-//         console.log("🚀 ~ returnfunction ~ target:", target)
-//         // Reflect.defineMetadata(ControllerDecoratorParams.Middleware, 
-//         //     middlewares, 
-//         //     target, 
-//         //     propertyKey
-//         // );
-//     }
-// }
-

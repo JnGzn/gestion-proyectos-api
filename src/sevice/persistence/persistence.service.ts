@@ -88,9 +88,8 @@ export class PersistenceService extends DatabaseConnection {
             });
 
             return task
-            console.log('Task created:', task.toJSON());
         } catch (error) {
-            console.error('Error creating task:', error);
+            throw error
         }
     }
 
@@ -155,7 +154,6 @@ export class PersistenceService extends DatabaseConnection {
             // Concatenar resultados de LEFT JOIN y RIGHT JOIN
             const unionResult = [...projectTaskData, ...taskOnlyData];
 
-            console.log('Union result:', unionResult);
             return unionResult;
         } catch (error) {
             throw error;
